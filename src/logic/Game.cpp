@@ -1,3 +1,9 @@
+// --------------------------------------------------------------------------------------
+// Parts of this file are inspired by the threepp project (https://github.com/markaren/threepp)
+// especially the structure used in example scenes.
+// Additional logic (parking system, key, door, win state, boundaries, cones, HUD, etc.)
+// --------------------------------------------------------------------------------------
+
 #include "logic/Game.h"
 #include "world/TrafficCones.h"
 
@@ -181,16 +187,20 @@ void Game::resetGame() {
     printedWin_ = false;
     hudAccumulator_ = 0.f;
 
+    // dør tilbake til startposisjon
     doorMesh_->position.copy(doorPos_);
 
+    // ny bakgrunn og bilfarge
     scene_->background = Color(0x87CEEBu);
     if (auto carPhong = std::dynamic_pointer_cast<MeshPhongMaterial>(carMesh_->material())) {
         carPhong->color = Color(0xff3b2fu);
     }
 
+    // nøkkel reset
     keyMesh_->position.copy(keyPos_);
     keyMesh_->visible = false;
 
+    // reset parkeringsplasser og fjern grønne markører
     for (auto& s : spots_) {
         s.completed = false;
         if (s.completeMarker) {
@@ -199,6 +209,14 @@ void Game::resetGame() {
         }
     }
 
+    // ❗ NYTT: fjern gamle kjegler og lag nye med nye tilfeldige posisjoner
+    for (auto& cone : cones_) {
+        scene_->remove(*cone);
+    }
+    cones_.clear();
+    addTrafficCones(*scene_, lotCenter_, lotW_, lotD_, 30, cones_);
+
+    // ny target-sekvens
     targetSequence_ = makeRandomTargetSequence(static_cast<int>(spots_.size()),
                                                requiredTargets_);
     currentTargetIdx_ = 0;
@@ -206,8 +224,10 @@ void Game::resetGame() {
     updateTargetMarkerPosition(targetMarker_,
                                spots_[targetSequence_[currentTargetIdx_]]);
 
+    // bil tilbake til start
     car_.hardReset(startPos_, startYaw_);
 }
+
 
 // ---------------- update ----------------
 
@@ -224,6 +244,26 @@ void Game::update(float dt) {
     Vector3 prevPos = car_.node()->position;
     car_.update(dt, controls_->in);
     Vector3 carPos = car_.node()->position;
+
+    // --- boundary walls: car cannot leave the parking lot ---
+    float minX = lotCenter_.x - lotW_ * 0.5f + 1.0f;
+    float maxX = lotCenter_.x + lotW_ * 0.5f - 1.0f;
+    float minZ = lotCenter_.z - lotD_ * 0.5f + 1.0f;
+    float maxZ = lotCenter_.z + lotD_ * 0.5f - 1.0f;
+
+    bool outOfBounds = false;
+
+    if (carPos.x < minX) { carPos.x = minX; outOfBounds = true; }
+    if (carPos.x > maxX) { carPos.x = maxX; outOfBounds = true; }
+    if (carPos.z < minZ) { carPos.z = minZ; outOfBounds = true; }
+    if (carPos.z > maxZ) { carPos.z = maxZ; outOfBounds = true; }
+
+    if (outOfBounds) {
+        // flytt bilen tilbake til kanten og stopp den
+        car_.node()->position.copy(carPos);
+        car_.stop();
+    }
+
 
     // Rotate wheels based on car speed
     float v = car_.speed(); // m/s

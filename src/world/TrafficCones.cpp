@@ -1,3 +1,9 @@
+// --------------------------------------------------------------------------------------
+// Traffic cone placement uses std::mt19937 random distribution based on standard C++
+// Examples of random usage were adapted from cppreference.com.
+// Object creation and rendering follow standard threepp API usage.
+// --------------------------------------------------------------------------------------
+
 #include "world/TrafficCones.h"
 
 #include <random>
