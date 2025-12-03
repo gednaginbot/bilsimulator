@@ -38,6 +38,13 @@ private:
     std::shared_ptr<threepp::Mesh> keyMesh_;
     std::shared_ptr<threepp::Mesh> targetMarker_;
 
+    // Hjul til bilen
+    std::shared_ptr<threepp::Mesh> wheelFL_; // front-left
+    std::shared_ptr<threepp::Mesh> wheelFR_; // front-right
+    std::shared_ptr<threepp::Mesh> wheelRL_; // rear-left
+    std::shared_ptr<threepp::Mesh> wheelRR_; // rear-right
+    float wheelRadius_ = 0.25f;
+
     std::vector<ParkingSpot> spots_;
     threepp::Vector3 lotCenter_;
     float lotW_ = 0.f;
