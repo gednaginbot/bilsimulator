@@ -87,6 +87,34 @@ Game::Game(Canvas& canvas, GLRenderer& renderer)
     }
     scene_->add(carMesh_);
 
+    // --- Wheels (4 cylinders as children of the car) ---
+    auto wheelMat = MeshPhongMaterial::create();
+    // bright color so movement is visible
+    wheelMat->color = Color(0xffff00); // yellow wheels
+
+    // Cylinder along X-axis (rotate geometry first)
+    auto wheelGeo = CylinderGeometry::create(wheelRadius_, wheelRadius_, 0.2f, 16);
+    wheelGeo->rotateZ(math::PI / 2); // lay wheel on its side so it rolls around X
+
+    wheelFL_ = Mesh::create(wheelGeo, wheelMat);
+    wheelFR_ = Mesh::create(wheelGeo, wheelMat);
+    wheelRL_ = Mesh::create(wheelGeo, wheelMat);
+    wheelRR_ = Mesh::create(wheelGeo, wheelMat);
+
+    // Car box: 1 wide (x), 0.5 high (y), 2 long (z)
+    // Place wheels at the corners, slightly below center
+    wheelFL_->position.set(-0.45f, -0.25f,  0.8f);  // front-left
+    wheelFR_->position.set( 0.45f, -0.25f,  0.8f);  // front-right
+    wheelRL_->position.set(-0.45f, -0.25f, -0.8f);  // rear-left
+    wheelRR_->position.set( 0.45f, -0.25f, -0.8f);  // rear-right
+
+    // Attach wheels to the car so they follow its movement/rotation
+    carMesh_->add(wheelFL_);
+    carMesh_->add(wheelFR_);
+    carMesh_->add(wheelRL_);
+    carMesh_->add(wheelRR_);
+
+
     startPos_ = {0.f, 0.25f, doorPos_.z - 8.f};
     startYaw_ = 0.f;
     car_.hardReset(startPos_, startYaw_);
@@ -196,6 +224,20 @@ void Game::update(float dt) {
     Vector3 prevPos = car_.node()->position;
     car_.update(dt, controls_->in);
     Vector3 carPos = car_.node()->position;
+
+    // Rotate wheels based on car speed
+    float v = car_.speed(); // m/s
+    if (wheelFL_ && std::abs(v) > 0.01f) {
+        float angular = v / wheelRadius_;   // rad/s
+        float dAngle  = angular * dt;       // radians per frame
+
+        // Negative so they spin "forward" when driving forward
+        wheelFL_->rotation.x -= dAngle;
+        wheelFR_->rotation.x -= dAngle;
+        wheelRL_->rotation.x -= dAngle;
+        wheelRR_->rotation.x -= dAngle;
+    }
+
 
     {
         const float carRadius  = 0.9f;
