@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------
+// Basic Object3D movement pattern inspired by threepp's transform examples.
+// All physics, acceleration, friction handling, and control logic were written
+// --------------------------------------------------------------------------------------
+
 #include "models/Car.h"
 
 #include <algorithm>

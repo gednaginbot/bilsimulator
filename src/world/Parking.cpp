@@ -1,5 +1,9 @@
-#include "world/Parking.h"
+// --------------------------------------------------------------------------------------
+// Parking spot geometry and “inside parking spot” detection based on custom logic.
+// Axis-aligned bounding box check method inspired by standard collision tutorials.
+// --------------------------------------------------------------------------------------
 
+#include "world/Parking.h"
 #include <random>
 #include <algorithm>
 #include <cmath>

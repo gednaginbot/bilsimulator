@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------
+// Application setup follows the structure of simple threepp examples,
+// but the full game loop and logic are original.
+// --------------------------------------------------------------------------------------
+
 #include <threepp/threepp.hpp>
 #include "logic/Game.h"
 

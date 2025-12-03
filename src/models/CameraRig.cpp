@@ -1,3 +1,8 @@
+// --------------------------------------------------------------------------------------
+// Camera follow logic loosely inspired by orbit/chase examples from threepp.
+// Implementation and smoothing behavior written independently for this project.
+// --------------------------------------------------------------------------------------
+
 #include "models/CameraRig.h"
 
 using namespace threepp;
