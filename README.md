@@ -100,6 +100,12 @@ https://github.com/markaren/threepp
 Catch2 testing framework:
 https://github.com/catchorg/Catch2
 
+**UML Class Diagram**
+
+Below is a placeholder for the UML diagram.
+<img width="2083" height="788" alt="image" src="https://github.com/user-attachments/assets/3b404c78-e4f9-4a1e-8651-af46e287e291" />
+
+
 
 **Summary**
 
